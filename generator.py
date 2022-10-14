@@ -15,7 +15,7 @@ LENGTH: int = 4
 OUTPUT_DIR: Path = Path("output")
 URL_TEMPLATE: jinja2.Template = jinja2.Template(
     "https://mobilidade.rio/{{ code }}")
-CODES= pd.read_csv('codes.csv')["code"].to_list()
+CODES= pd.read_csv('fixtures/codes.csv')["code"].to_list()
 
 
 def generate_code(charset: Union[str, List[str]] = CHARSET, length: int = LENGTH) -> str:
@@ -55,7 +55,7 @@ if __name__ == "__main__":
                 generate_qr(code)
                 CODES.append(code)
         done = _ +1
-        pd.DataFrame(CODES,columns=["code"]).to_csv('codes.csv')
+        pd.DataFrame(CODES,columns=["code"]).to_csv('fixtures/codes.csv')
     
     print(f"Generated {done} codes")
     print(f"Output directory: {OUTPUT_DIR}")

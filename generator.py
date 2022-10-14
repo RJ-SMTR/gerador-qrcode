@@ -4,15 +4,18 @@ from sys import argv
 from typing import List, Union
 
 import jinja2
+import pandas as pd
 import qrcode
 from tqdm import tqdm
 
 
-CHARSET: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+CHARSET: str = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 LENGTH: int = 4
 OUTPUT_DIR: Path = Path("output")
 URL_TEMPLATE: jinja2.Template = jinja2.Template(
     "https://mobilidade.rio/{{ code }}")
+CODES= pd.read_csv('fixtures/codes.csv')["code"].to_list()
 
 
 def generate_code(charset: Union[str, List[str]] = CHARSET, length: int = LENGTH) -> str:
@@ -26,7 +29,6 @@ def generate_url(code: str) -> str:
 def generate_qr(code: str) -> str:
     img = qrcode.make(generate_url(code))
     img.save(OUTPUT_DIR / f"{code}.png")
-
 
 if __name__ == "__main__":
     if len(argv) != 2:
@@ -43,8 +45,17 @@ if __name__ == "__main__":
         OUTPUT_DIR.mkdir()
 
     for _ in tqdm(range(number_of_codes)):
-        code: str = generate_code()
-        generate_qr(code)
-
-    print(f"Generated {number_of_codes} codes")
+        code_stop = True
+        i=0
+        while code_stop and i<1000:
+            code= str = generate_code()
+            code_stop = code in CODES    
+            i+=1
+            if not code_stop:
+                generate_qr(code)
+                CODES.append(code)
+        done = _ +1
+        pd.DataFrame(CODES,columns=["code"]).to_csv('fixtures/codes.csv')
+    
+    print(f"Generated {done} codes")
     print(f"Output directory: {OUTPUT_DIR}")

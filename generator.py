@@ -43,19 +43,22 @@ if __name__ == "__main__":
 
     if not OUTPUT_DIR.exists():
         OUTPUT_DIR.mkdir()
-
+    
+    gerados=[]
     for _ in tqdm(range(number_of_codes)):
         code_stop = True
         i=0
-        while code_stop and i<1000:
+        while code_stop and i<10000:
             code= str = generate_code()
             code_stop = code in CODES    
             i+=1
             if not code_stop:
                 generate_qr(code)
                 CODES.append(code)
+                gerados.append(code)
         done = _ +1
         pd.DataFrame(CODES,columns=["code"]).to_csv('fixtures/codes.csv')
+        pd.DataFrame(gerados,columns=["code"]).to_csv('fixtures/gerados.csv')
     
     print(f"Generated {done} codes")
     print(f"Output directory: {OUTPUT_DIR}")
